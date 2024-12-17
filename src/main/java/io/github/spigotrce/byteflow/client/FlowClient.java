@@ -66,7 +66,7 @@ public class FlowClient {
         exceptionConsumer.accept(exception);
     }
 
-    public void onExceptionThrown(Consumer<Throwable> handler) {
+    public void setExceptionHandler(Consumer<Throwable> handler) {
         exceptionConsumer = handler;
     }
 
