@@ -21,8 +21,7 @@ public class FlowServer {
         try (ServerSocket serverSocket = new ServerSocket(port)) {
             while (true) {
                 Socket clientSocket = serverSocket.accept();
-                ClientHandler handler = new ClientHandler(clientSocket, this, authenticationToken
-                );
+                ClientHandler handler = new ClientHandler(clientSocket, this, authenticationToken);
                 clientPool.submit(handler);
             }
         }
@@ -37,8 +36,7 @@ public class FlowServer {
     }
 
     public void broadcastMessage(byte[] data) throws IOException {
-        for (ClientHandler handler : clients) {
+        for (ClientHandler handler : clients)
             handler.sendMessage(data);
-        }
     }
 }

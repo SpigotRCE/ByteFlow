@@ -38,9 +38,8 @@ public class FlowClient {
     private void authenticate() throws IOException {
         MessageUtils.writeUTF(outputStream, token);
         String response = MessageUtils.readUTF(inputStream);
-        if (!"AUTH_SUCCESS".equals(response)) {
+        if (!"AUTH_SUCCESS".equals(response))
             throw new IOException("Authentication failed");
-        }
     }
 
     private void startListening() {
@@ -50,15 +49,12 @@ public class FlowClient {
                     byte[] data = MessageUtils.readMessage(inputStream);
 
                     String channel = MessageUtils.extractChannel(data);
-                    byte[] message = MessageUtils.extractMessage(data);
 
-                    if (channelListeners.containsKey(channel)) {
-                        channelListeners.get(channel).accept(message);
-                    }
+                    if (channelListeners.containsKey(channel))
+                        channelListeners.get(channel).accept(MessageUtils.extractMessage(data));
 
-                    if (globalListener != null) {
+                    if (globalListener != null)
                         globalListener.accept(data);
-                    }
                 }
             } catch (IOException e) {
                 catchException(e);
