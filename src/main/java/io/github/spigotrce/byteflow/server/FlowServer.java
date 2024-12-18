@@ -35,8 +35,13 @@ public class FlowServer {
         clients.remove(handler);
     }
 
-    public void broadcastMessage(byte[] data) throws IOException {
+    public void broadcastMessage(byte[] data, ClientHandler excludeClient) throws IOException {
         for (ClientHandler handler : clients)
-            handler.sendMessage(data);
+            if (handler != excludeClient)
+                handler.sendMessage(data);
+    }
+
+    public void broadcastMessage(byte[] data) throws IOException {
+        broadcastMessage(data, null);
     }
 }

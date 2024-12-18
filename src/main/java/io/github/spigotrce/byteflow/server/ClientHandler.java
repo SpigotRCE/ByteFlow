@@ -29,7 +29,7 @@ public class ClientHandler implements Runnable {
                 server.registerClient(this);
 
                 while (!socket.isClosed())
-                    server.broadcastMessage(MessageUtils.readMessage(inputStream));
+                    server.broadcastMessage(MessageUtils.readMessage(inputStream), this);
             } else {
                 MessageUtils.writeUTF(outputStream, "AUTH_FAIL");
                 socket.close();
