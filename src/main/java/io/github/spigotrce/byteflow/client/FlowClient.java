@@ -1,6 +1,7 @@
 package io.github.spigotrce.byteflow.client;
 
 import io.github.spigotrce.byteflow.common.MessageUtils;
+import io.github.spigotrce.byteflow.common.VersionConstants;
 
 import java.io.*;
 import java.net.Socket;
@@ -36,10 +37,14 @@ public class FlowClient {
     }
 
     private void authenticate() throws IOException {
+        MessageUtils.writeInt(outputStream, VersionConstants.PVN);
         MessageUtils.writeUTF(outputStream, token);
         String response = MessageUtils.readUTF(inputStream);
-        if (!"AUTH_SUCCESS".equals(response))
-            throw new IOException("Authentication failed");
+
+        if ("AUTH_SUCCESS".equals(response)) return;
+        if ("INVALID_PVN".equals(response))
+            throw new IOException("Invalid PVN, server expecting: " + MessageUtils.readInt(inputStream));
+        throw new IOException("Authentication failed");
     }
 
     private void startListening() {

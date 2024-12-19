@@ -1,6 +1,7 @@
 package io.github.spigotrce.byteflow.server;
 
 import io.github.spigotrce.byteflow.common.MessageUtils;
+import io.github.spigotrce.byteflow.common.VersionConstants;
 
 import java.io.*;
 import java.net.Socket;
@@ -23,6 +24,12 @@ public class ClientHandler implements Runnable {
         try {
             inputStream = socket.getInputStream();
             outputStream = socket.getOutputStream();
+
+            if (VersionConstants.PVN != MessageUtils.readInt(inputStream)) {
+                MessageUtils.writeUTF(outputStream, "INVALID_PVN");
+                MessageUtils.writeInt(outputStream, VersionConstants.PVN);
+                socket.close();
+            }
 
             if (isValidToken(MessageUtils.readUTF(inputStream))) {
                 MessageUtils.writeUTF(outputStream, "AUTH_SUCCESS");
