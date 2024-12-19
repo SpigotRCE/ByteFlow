@@ -10,7 +10,7 @@ public class FlowServer {
     private final int port;
     private final String token;
     private final ExecutorService clientPool = Executors.newCachedThreadPool();
-    private final ArrayList<ClientHandler> clients = new ArrayList<>();
+    private final ArrayList<ClientListener> clients = new ArrayList<>();
 
     public FlowServer(int port, String token) {
         this.port = port;
@@ -21,22 +21,22 @@ public class FlowServer {
         try (ServerSocket serverSocket = new ServerSocket(port)) {
             while (true) {
                 Socket clientSocket = serverSocket.accept();
-                ClientHandler handler = new ClientHandler(clientSocket, this, token);
+                ClientListener handler = new ClientListener(clientSocket, this, token);
                 clientPool.submit(handler);
             }
         }
     }
 
-    public void registerClient(ClientHandler handler) {
+    public void registerClient(ClientListener handler) {
         clients.add(handler);
     }
 
-    public void deregisterClient(ClientHandler handler) {
+    public void deregisterClient(ClientListener handler) {
         clients.remove(handler);
     }
 
-    public void broadcastMessage(byte[] data, ClientHandler excludeClient) throws IOException {
-        for (ClientHandler handler : clients)
+    public void broadcastMessage(byte[] data, ClientListener excludeClient) throws IOException {
+        for (ClientListener handler : clients)
             if (handler != excludeClient)
                 handler.sendMessage(data);
     }

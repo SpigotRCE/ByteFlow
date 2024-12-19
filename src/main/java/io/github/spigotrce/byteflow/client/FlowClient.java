@@ -1,5 +1,6 @@
 package io.github.spigotrce.byteflow.client;
 
+import io.github.spigotrce.byteflow.common.PacketListener;
 import io.github.spigotrce.byteflow.common.IOUtils;
 import io.github.spigotrce.byteflow.common.VersionConstants;
 
@@ -8,7 +9,7 @@ import java.net.Socket;
 import java.util.concurrent.*;
 import java.util.function.*;
 
-public class FlowClient {
+public class FlowClient extends PacketListener {
     private final String ip;
     private final int port;
     private final String token;
