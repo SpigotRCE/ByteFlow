@@ -19,8 +19,6 @@ public class FlowClient {
 
     private final ConcurrentHashMap<String, Consumer<byte[]>> channelListeners = new ConcurrentHashMap<>();
     private final Consumer<Throwable> exceptionHandler;
-    private Consumer<byte[]> globalListener;
-
     public FlowClient(String ip, int port, String token, Consumer<Throwable> exceptionHandler) throws IOException {
         this.ip = ip;
         this.port = port;
@@ -64,9 +62,6 @@ public class FlowClient {
 
                     if (channelListeners.containsKey(channel))
                         channelListeners.get(channel).accept(MessageUtils.extractMessage(data));
-
-                    if (globalListener != null)
-                        globalListener.accept(data);
                 }
             } catch (IOException e) {
                 exceptionHandler.accept(e);
@@ -77,10 +72,6 @@ public class FlowClient {
 
     public void onMessage(String channel, Consumer<byte[]> handler) {
         channelListeners.put(channel, handler);
-    }
-
-    public void onMessage(Consumer<byte[]> handler) {
-        this.globalListener = handler;
     }
 
     public void sendMessage(String channel, byte[] message) throws IOException {
