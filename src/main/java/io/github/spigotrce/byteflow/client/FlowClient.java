@@ -70,7 +70,7 @@ public class FlowClient {
     }
 
 
-    public void onMessage(String channel, Consumer<byte[]> handler) {
+    public void setChannelHandler(String channel, Consumer<byte[]> handler) {
         channelListeners.put(channel, handler);
     }
 
