@@ -1,6 +1,6 @@
 package io.github.spigotrce.byteflow.client;
 
-import io.github.spigotrce.byteflow.common.MessageUtils;
+import io.github.spigotrce.byteflow.common.IOUtils;
 import io.github.spigotrce.byteflow.common.VersionConstants;
 
 import java.io.*;
@@ -36,15 +36,15 @@ public class FlowClient {
     }
 
     private void authenticate() throws IOException, IllegalStateException {
-        MessageUtils.writeInt(outputStream, VersionConstants.PVN);
-        MessageUtils.writeUTF(outputStream, token);
+        IOUtils.writeInt(outputStream, VersionConstants.PVN);
+        IOUtils.writeUTF(outputStream, token);
 
-        String result = MessageUtils.readUTF(inputStream);
+        String result = IOUtils.readUTF(inputStream);
         if ("AUTH_SUCCESS".equals(result)) return;
 
-        String response = MessageUtils.readUTF(inputStream);
+        String response = IOUtils.readUTF(inputStream);
         if ("INVALID_PVN".equals(response)) {
-            int pvn = MessageUtils.readInt(inputStream);
+            int pvn = IOUtils.readInt(inputStream);
             throw new IOException("Invalid PVN, server expecting: " + pvn);
         }
 
@@ -58,12 +58,12 @@ public class FlowClient {
         executor.submit(() -> {
             try {
                 while (!socket.isClosed()) {
-                    byte[] data = MessageUtils.readMessage(inputStream);
+                    byte[] data = IOUtils.readMessage(inputStream);
 
-                    String channel = MessageUtils.extractChannel(data);
+                    String channel = IOUtils.extractChannel(data);
 
                     if (channelListeners.containsKey(channel))
-                        channelListeners.get(channel).accept(MessageUtils.extractMessage(data));
+                        channelListeners.get(channel).accept(IOUtils.extractMessage(data));
                 }
             } catch (IOException e) {
                 exceptionHandler.accept(e);
@@ -76,8 +76,8 @@ public class FlowClient {
     }
 
     public void sendChannelMessage(String channel, byte[] message) throws IOException {
-        byte[] data = MessageUtils.encodeMessage(channel, message);
-        MessageUtils.writeMessage(outputStream, data);
+        byte[] data = IOUtils.encodeMessage(channel, message);
+        IOUtils.writeMessage(outputStream, data);
     }
 
     public void close() throws IOException {

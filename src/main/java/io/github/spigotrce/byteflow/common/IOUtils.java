@@ -3,7 +3,7 @@ package io.github.spigotrce.byteflow.common;
 import com.google.common.io.ByteStreams;
 import java.io.*;
 
-public class MessageUtils {
+public class IOUtils {
     public static void writeUTF(OutputStream outputStream, String value) throws IOException {
         byte[] utfBytes = value.getBytes();
         writeInt(outputStream, utfBytes.length);
