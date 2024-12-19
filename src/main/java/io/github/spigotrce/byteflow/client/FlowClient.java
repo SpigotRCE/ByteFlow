@@ -19,7 +19,7 @@ public class FlowClient {
 
     private final ConcurrentHashMap<String, Consumer<byte[]>> channelListeners = new ConcurrentHashMap<>();
     private final Consumer<Throwable> exceptionHandler;
-    public FlowClient(String ip, int port, String token, Consumer<Throwable> exceptionHandler) throws IOException {
+    public FlowClient(String ip, int port, String token, Consumer<Throwable> exceptionHandler) throws IOException, IllegalStateException {
         this.ip = ip;
         this.port = port;
         this.token = token;
@@ -27,7 +27,7 @@ public class FlowClient {
         connect();
     }
 
-    private void connect() throws IOException {
+    private void connect() throws IOException, IllegalStateException {
         socket = new Socket(ip, port);
         inputStream = socket.getInputStream();
         outputStream = socket.getOutputStream();
@@ -35,7 +35,7 @@ public class FlowClient {
         startListening();
     }
 
-    private void authenticate() throws IOException {
+    private void authenticate() throws IOException, IllegalStateException {
         MessageUtils.writeInt(outputStream, VersionConstants.PVN);
         MessageUtils.writeUTF(outputStream, token);
 
@@ -50,6 +50,8 @@ public class FlowClient {
 
         if ("INVALID_TOKEN".equals(response))
             throw new IOException("Invalid token");
+
+        throw new IllegalStateException("Invalid response: " + response);
     }
 
     private void startListening() {
