@@ -8,20 +8,20 @@ import java.util.concurrent.*;
 
 public class FlowServer {
     private final int port;
-    private final String authenticationToken;
+    private final String token;
     private final ExecutorService clientPool = Executors.newCachedThreadPool();
     private final ArrayList<ClientHandler> clients = new ArrayList<>();
 
-    public FlowServer(int port, String authenticationToken) {
+    public FlowServer(int port, String token) {
         this.port = port;
-        this.authenticationToken = authenticationToken;
+        this.token = token;
     }
 
     public void start() throws IOException {
         try (ServerSocket serverSocket = new ServerSocket(port)) {
             while (true) {
                 Socket clientSocket = serverSocket.accept();
-                ClientHandler handler = new ClientHandler(clientSocket, this, authenticationToken);
+                ClientHandler handler = new ClientHandler(clientSocket, this, token);
                 clientPool.submit(handler);
             }
         }

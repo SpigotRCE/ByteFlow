@@ -9,14 +9,14 @@ import java.net.Socket;
 public class ClientHandler implements Runnable {
     private final Socket socket;
     private final FlowServer server;
-    private final String authenticationToken;
+    private final String token;
     private InputStream inputStream;
     private OutputStream outputStream;
 
-    public ClientHandler(Socket socket, FlowServer server, String authenticationToken) {
+    public ClientHandler(Socket socket, FlowServer server, String token) {
         this.socket = socket;
         this.server = server;
-        this.authenticationToken = authenticationToken;
+        this.token = token;
     }
 
     @Override
@@ -47,7 +47,7 @@ public class ClientHandler implements Runnable {
     }
 
     private boolean isValidToken(String token) {
-        return token.equals(authenticationToken);
+        return token.equals(this.token);
     }
 
     public void sendMessage(byte[] data) throws IOException {
