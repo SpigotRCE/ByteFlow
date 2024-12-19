@@ -75,7 +75,7 @@ public class FlowClient {
         channelListeners.put(channel, handler);
     }
 
-    public void sendMessage(String channel, byte[] message) throws IOException {
+    public void sendChannelMessage(String channel, byte[] message) throws IOException {
         byte[] data = MessageUtils.encodeMessage(channel, message);
         MessageUtils.writeMessage(outputStream, data);
     }
