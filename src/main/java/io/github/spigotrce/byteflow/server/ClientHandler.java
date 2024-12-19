@@ -32,14 +32,14 @@ public class ClientHandler implements Runnable {
                 MessageUtils.writeUTF(outputStream, "AUTH_FAIL");
                 MessageUtils.writeUTF(outputStream, "INVALID_PVN");
                 MessageUtils.writeInt(outputStream, VersionConstants.PVN);
-                socket.close();
+                close();
+                return;
             }
 
             if (!this.token.equals(token)) {
                 MessageUtils.writeUTF(outputStream, "AUTH_FAIL");
                 MessageUtils.writeUTF(outputStream, "INVALID_TOKEN");
-                socket.close();
-                return;
+                close();
             }
 
             MessageUtils.writeUTF(outputStream, "AUTH_SUCCESS");
@@ -48,11 +48,17 @@ public class ClientHandler implements Runnable {
             while (!socket.isClosed())
                 server.broadcastMessage(MessageUtils.readMessage(inputStream), this);
         } catch (IOException e) {
+            // TODO: implement exceptionHandler
             server.deregisterClient(this);
         }
     }
 
     public void sendMessage(byte[] data) throws IOException {
         MessageUtils.writeMessage(outputStream, data);
+    }
+
+    public void close() throws IOException {
+        server.deregisterClient(this);
+        socket.close();
     }
 }
