@@ -39,12 +39,18 @@ public class FlowClient {
     private void authenticate() throws IOException {
         MessageUtils.writeInt(outputStream, VersionConstants.PVN);
         MessageUtils.writeUTF(outputStream, token);
-        String response = MessageUtils.readUTF(inputStream);
 
-        if ("AUTH_SUCCESS".equals(response)) return;
-        if ("INVALID_PVN".equals(response))
-            throw new IOException("Invalid PVN, server expecting: " + MessageUtils.readInt(inputStream));
-        throw new IOException("Authentication failed");
+        String result = MessageUtils.readUTF(inputStream);
+        if ("AUTH_SUCCESS".equals(result)) return;
+
+        String response = MessageUtils.readUTF(inputStream);
+        if ("INVALID_PVN".equals(response)) {
+            int pvn = MessageUtils.readInt(inputStream);
+            throw new IOException("Invalid PVN, server expecting: " + pvn);
+        }
+
+        if ("INVALID_TOKEN".equals(response))
+            throw new IOException("Invalid token");
     }
 
     private void startListening() {

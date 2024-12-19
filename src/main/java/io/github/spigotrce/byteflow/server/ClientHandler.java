@@ -25,29 +25,31 @@ public class ClientHandler implements Runnable {
             inputStream = socket.getInputStream();
             outputStream = socket.getOutputStream();
 
-            if (VersionConstants.PVN != MessageUtils.readInt(inputStream)) {
+            int pvn = MessageUtils.readInt(inputStream);
+            String token = MessageUtils.readUTF(inputStream);
+
+            if (VersionConstants.PVN != pvn) {
+                MessageUtils.writeUTF(outputStream, "AUTH_FAIL");
                 MessageUtils.writeUTF(outputStream, "INVALID_PVN");
                 MessageUtils.writeInt(outputStream, VersionConstants.PVN);
                 socket.close();
             }
 
-            if (isValidToken(MessageUtils.readUTF(inputStream))) {
-                MessageUtils.writeUTF(outputStream, "AUTH_SUCCESS");
-                server.registerClient(this);
-
-                while (!socket.isClosed())
-                    server.broadcastMessage(MessageUtils.readMessage(inputStream), this);
-            } else {
+            if (!this.token.equals(token)) {
                 MessageUtils.writeUTF(outputStream, "AUTH_FAIL");
+                MessageUtils.writeUTF(outputStream, "INVALID_TOKEN");
                 socket.close();
+                return;
             }
+
+            MessageUtils.writeUTF(outputStream, "AUTH_SUCCESS");
+            server.registerClient(this);
+
+            while (!socket.isClosed())
+                server.broadcastMessage(MessageUtils.readMessage(inputStream), this);
         } catch (IOException e) {
             server.deregisterClient(this);
         }
-    }
-
-    private boolean isValidToken(String token) {
-        return token.equals(this.token);
     }
 
     public void sendMessage(byte[] data) throws IOException {
