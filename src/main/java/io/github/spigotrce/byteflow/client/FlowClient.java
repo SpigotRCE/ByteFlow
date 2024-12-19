@@ -69,7 +69,6 @@ public class FlowClient {
         });
     }
 
-
     public void setChannelHandler(String channel, Consumer<byte[]> handler) {
         channelListeners.put(channel, handler);
     }
