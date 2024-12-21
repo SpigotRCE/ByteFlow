@@ -7,14 +7,14 @@ import io.github.spigotrce.byteflow.common.VersionConstants;
 import java.io.*;
 import java.net.Socket;
 
-public class ClientHandler extends PacketListener implements Runnable {
+public class ClientListener extends PacketListener implements Runnable {
     private final Socket socket;
     private final FlowServer server;
     private final String token;
     private InputStream inputStream;
     private OutputStream outputStream;
 
-    public ClientHandler(Socket socket, FlowServer server, String token) {
+    public ClientListener(Socket socket, FlowServer server, String token) {
         this.socket = socket;
         this.server = server;
         this.token = token;
